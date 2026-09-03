@@ -3,6 +3,7 @@ import { defineConfig } from 'vitepress'
 export default defineConfig({
   title: 'OryxOS',
   description: 'Enterprise-Controlled, Java-Native, Privately-Auditable Agent Runtime.',
+  base: '/OryxOS/',
   cleanUrls: true,
   appearance: 'force-light',
 
