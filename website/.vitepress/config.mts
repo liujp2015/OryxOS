@@ -3,7 +3,6 @@ import { defineConfig } from 'vitepress'
 export default defineConfig({
   title: 'OryxOS',
   description: 'Enterprise-Controlled, Java-Native, Privately-Auditable Agent Runtime.',
-  lang: 'en-US',
   cleanUrls: true,
   appearance: 'force-light',
 
@@ -20,12 +19,70 @@ export default defineConfig({
     ['meta', { property: 'og:type', content: 'website' }],
   ],
 
+  locales: {
+    root: {
+      label: 'English',
+      lang: 'en-US',
+      description: 'Enterprise-Controlled, Java-Native, Privately-Auditable Agent Runtime.',
+      themeConfig: {
+        nav: [
+          { text: 'Home', link: '/' },
+          { text: 'Docs', link: '/docs/' },
+          { text: 'GitHub', link: 'https://github.com/liujp2015/OryxOS' },
+        ],
+        sidebar: {
+          '/docs/': [
+            {
+              text: 'Getting Started',
+              items: [
+                { text: 'Overview', link: '/docs/overview' },
+              ],
+            },
+            {
+              text: 'Documentation',
+              items: [
+                { text: 'Requirements', link: '/docs/demand' },
+                { text: 'Architecture', link: '/docs/tech' },
+                { text: 'AI Dev Guide', link: '/docs/ai-guide' },
+              ],
+            },
+          ],
+        },
+      },
+    },
+    zh: {
+      label: '简体中文',
+      lang: 'zh-CN',
+      description: '企业可控、Java 原生、私有可审计的 Agent 统一底座。',
+      themeConfig: {
+        nav: [
+          { text: '首页', link: '/zh/' },
+          { text: '文档', link: '/zh/docs/' },
+          { text: 'GitHub', link: 'https://github.com/liujp2015/OryxOS' },
+        ],
+        sidebar: {
+          '/zh/docs/': [
+            {
+              text: '快速开始',
+              items: [
+                { text: '概览', link: '/zh/docs/overview' },
+              ],
+            },
+            {
+              text: '文档',
+              items: [
+                { text: '需求分析', link: '/zh/docs/demand' },
+                { text: '技术方案', link: '/zh/docs/tech' },
+                { text: 'AI 开发指南', link: '/zh/docs/ai-guide' },
+              ],
+            },
+          ],
+        },
+      },
+    },
+  },
+
   themeConfig: {
-    nav: [
-      { text: 'Docs', link: '/docs/' },
-      { text: 'GitHub', link: 'https://github.com/liujp2015/OryxOS' },
-    ],
-    sidebar: [],
     socialLinks: [
       { icon: 'github', link: 'https://github.com/liujp2015/OryxOS' },
     ],
