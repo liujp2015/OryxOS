@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120">
+  <defs>
+    <linearGradient id="hornGrad" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%"  stop-color="#3B82F6"/>
+      <stop offset="100%" stop-color="#1E3A8A"/>
+    </linearGradient>
+    <linearGradient id="headGrad" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%"  stop-color="#2563EB"/>
+      <stop offset="100%" stop-color="#0F2A5F"/>
+    </linearGradient>
+  </defs>
+  <path d="M 46 56 Q 38 32 40 8 Q 41 4 44 6 Q 50 32 52 56 Z" fill="url(#hornGrad)"/>
+  <path d="M 74 56 Q 82 32 80 8 Q 79 4 76 6 Q 70 32 68 56 Z" fill="url(#hornGrad)"/>
+  <circle cx="60" cy="78" r="28" fill="url(#headGrad)"/>
+  <circle cx="60" cy="78" r="20" fill="none" stroke="#FBBF24" stroke-width="1.2" stroke-dasharray="2 2.5" opacity="0.55"/>
+  <circle cx="60" cy="78" r="11" fill="#FBBF24"/>
+  <circle cx="56" cy="74" r="3.5" fill="#FFFFFF" opacity="0.55"/>
+</svg>

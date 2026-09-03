@@ -1,0 +1,50 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 520 160" role="img" aria-label="OryxOS — Enterprise Java-native Agent Runtime">
+  <title>OryxOS — Enterprise Java-native Agent Runtime</title>
+  <desc>OryxOS horizontal logo (dark theme).</desc>
+
+  <defs>
+    <linearGradient id="hornGradD" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%"  stop-color="#60A5FA"/>
+      <stop offset="100%" stop-color="#3B82F6"/>
+    </linearGradient>
+    <linearGradient id="headGradD" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%"  stop-color="#3B82F6"/>
+      <stop offset="100%" stop-color="#1E40AF"/>
+    </linearGradient>
+  </defs>
+
+  <!-- ===== Mark ===== -->
+  <g transform="translate(20 20)">
+    <path d="M 46 56 Q 38 32 40 8 Q 41 4 44 6 Q 50 32 52 56 Z"
+          fill="url(#hornGradD)"/>
+    <path d="M 74 56 Q 82 32 80 8 Q 79 4 76 6 Q 70 32 68 56 Z"
+          fill="url(#hornGradD)"/>
+    <circle cx="60" cy="78" r="28" fill="url(#headGradD)"/>
+    <circle cx="60" cy="78" r="20"
+            fill="none"
+            stroke="#FBBF24"
+            stroke-width="1.2"
+            stroke-dasharray="2 2.5"
+            opacity="0.65"/>
+    <circle cx="60" cy="78" r="11" fill="#FBBF24"/>
+    <circle cx="56" cy="74" r="3.5" fill="#FFFFFF" opacity="0.6"/>
+  </g>
+
+  <!-- ===== Wordmark ===== -->
+  <g font-family="'Inter','SF Pro Display','Helvetica Neue','PingFang SC','Microsoft YaHei',Arial,sans-serif">
+    <text x="170" y="100"
+          font-size="72"
+          font-weight="800"
+          fill="#F1F5F9"
+          letter-spacing="-2">
+      Oryx<tspan fill="#FBBF24">OS</tspan>
+    </text>
+    <text x="172" y="132"
+          font-size="16"
+          font-weight="500"
+          fill="#94A3B8"
+          letter-spacing="0.5">
+      Enterprise Java-native Agent Runtime · 企业级 Java 原生 Agent 运行时
+    </text>
+  </g>
+</svg>
