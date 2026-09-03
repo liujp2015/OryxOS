@@ -25,6 +25,7 @@ export default defineConfig({
       lang: 'en-US',
       description: 'Enterprise-Controlled, Java-Native, Privately-Auditable Agent Runtime.',
       themeConfig: {
+        logo: { src: '/logo-mark.svg', alt: 'OryxOS' },
         nav: [
           { text: 'Home', link: '/' },
           { text: 'Docs', link: '/docs/' },
@@ -55,6 +56,7 @@ export default defineConfig({
       lang: 'zh-CN',
       description: '企业可控、Java 原生、私有可审计的 Agent 统一底座。',
       themeConfig: {
+        logo: { src: '/logo-mark.svg', alt: 'OryxOS' },
         nav: [
           { text: '首页', link: '/zh/' },
           { text: '文档', link: '/zh/docs/' },

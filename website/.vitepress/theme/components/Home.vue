@@ -92,6 +92,7 @@ const sdkCards = computed(() => [
   <!-- ============== HERO ============== -->
   <section class="oryx-hero">
     <div class="oryx-hero-inner">
+      <img src="/logo-mark.svg" alt="OryxOS" class="oryx-hero-mark" />
       <div class="oryx-badge">
         <span class="oryx-badge-dot"></span>
         Enterprise Agent OS · Java Native · Private &amp; Auditable
@@ -332,6 +333,12 @@ curl -X POST http://localhost:8080/api/agent/chat \
 .oryx-hero-inner {
   max-width: 960px;
   margin: 0 auto;
+}
+.oryx-hero-mark {
+  display: block;
+  width: 80px;
+  height: 80px;
+  margin: 0 auto 32px;
 }
 .oryx-badge {
   display: inline-flex;
