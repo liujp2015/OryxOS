@@ -28,6 +28,10 @@
 }
 
 /* Base typography */
+html, body {
+  overflow-x: hidden;
+}
+
 body {
   font-family: var(--oryx-font-body);
   color: var(--oryx-text-1);

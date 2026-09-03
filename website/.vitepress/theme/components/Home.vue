@@ -543,7 +543,7 @@ curl -X POST http://localhost:8080/api/agent/chat \
 }
 .oryx-primitives {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 24px;
 }
 .oryx-primitive {
@@ -551,6 +551,7 @@ curl -X POST http://localhost:8080/api/agent/chat \
   border: 1px solid var(--oryx-border);
   border-radius: 12px;
   padding: 24px;
+  min-width: 0;
   transition: border-color 0.2s, box-shadow 0.2s;
 }
 .oryx-primitive:hover {
@@ -586,6 +587,8 @@ curl -X POST http://localhost:8080/api/agent/chat \
   font-size: 12px;
   line-height: 1.6;
   overflow-x: auto;
+  max-width: 100%;
+  white-space: pre;
   margin: 0;
   color: var(--oryx-text-1);
 }
