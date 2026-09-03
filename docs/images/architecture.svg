@@ -1,0 +1,164 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1100 820" font-family="-apple-system, 'PingFang SC', 'Microsoft YaHei', 'Helvetica Neue', Arial, sans-serif">
+  <defs>
+    <marker id="arrow" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto" markerUnits="strokeWidth">
+      <path d="M0,0 L0,6 L9,3 z" fill="#475569"/>
+    </marker>
+    <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="2" stdDeviation="3" flood-color="#000" flood-opacity="0.08"/>
+    </filter>
+  </defs>
+
+  <!-- Background -->
+  <rect width="1100" height="820" fill="#fafafa"/>
+
+  <!-- Title -->
+  <text x="550" y="38" text-anchor="middle" font-size="24" font-weight="700" fill="#0f172a">OryxOS 整体架构</text>
+  <text x="550" y="62" text-anchor="middle" font-size="13" fill="#64748b">分层视图 · 五大核心能力 · 单二进制部署</text>
+
+  <!-- ========== Layer 1: Access ========== -->
+  <g id="access-layer">
+    <rect x="60" y="95" width="980" height="110" rx="10" fill="#eff6ff" stroke="#3b82f6" stroke-width="2" filter="url(#shadow)"/>
+    <rect x="60" y="95" width="980" height="32" rx="10" fill="#3b82f6"/>
+    <rect x="60" y="115" width="980" height="12" fill="#3b82f6"/>
+    <text x="80" y="116" font-size="14" font-weight="700" fill="#ffffff">接入层 Access Layer</text>
+    <text x="1020" y="116" text-anchor="end" font-size="11" fill="#dbeafe">用户消息入口</text>
+
+    <rect x="120" y="148" width="240" height="40" rx="6" fill="#ffffff" stroke="#3b82f6" stroke-width="1.5"/>
+    <text x="240" y="166" text-anchor="middle" font-size="13" font-weight="600" fill="#1e3a8a">CLI Channel</text>
+    <text x="240" y="182" text-anchor="middle" font-size="10" fill="#64748b">oryxos chat / oryxos init</text>
+
+    <rect x="430" y="148" width="240" height="40" rx="6" fill="#ffffff" stroke="#3b82f6" stroke-width="1.5"/>
+    <text x="550" y="166" text-anchor="middle" font-size="13" font-weight="600" fill="#1e3a8a">Web Service</text>
+    <text x="550" y="182" text-anchor="middle" font-size="10" fill="#64748b">REST API (能力五)</text>
+
+    <rect x="740" y="148" width="240" height="40" rx="6" fill="#ffffff" stroke="#3b82f6" stroke-width="1.5" stroke-dasharray="4 3"/>
+    <text x="860" y="166" text-anchor="middle" font-size="13" font-weight="600" fill="#1e3a8a">IM Channel</text>
+    <text x="860" y="182" text-anchor="middle" font-size="10" fill="#64748b">企业微信/飞书/钉钉 (扩展)</text>
+  </g>
+
+  <!-- Arrows down -->
+  <line x1="550" y1="205" x2="550" y2="240" stroke="#475569" stroke-width="2" marker-end="url(#arrow)"/>
+
+  <!-- ========== Layer 2: Engine ========== -->
+  <g id="engine-layer">
+    <rect x="60" y="245" width="980" height="130" rx="10" fill="#fff7ed" stroke="#f97316" stroke-width="2" filter="url(#shadow)"/>
+    <rect x="60" y="245" width="980" height="32" rx="10" fill="#f97316"/>
+    <rect x="60" y="265" width="980" height="12" fill="#f97316"/>
+    <text x="80" y="266" font-size="14" font-weight="700" fill="#ffffff">引擎层 Engine Layer · Agent 大脑</text>
+    <text x="1020" y="266" text-anchor="end" font-size="11" fill="#ffedd5">ReAct 循环自实现</text>
+
+    <!-- ReActLoop (big, central) -->
+    <rect x="380" y="295" width="180" height="60" rx="8" fill="#ffffff" stroke="#ea580c" stroke-width="2"/>
+    <text x="470" y="318" text-anchor="middle" font-size="14" font-weight="700" fill="#9a3412">ReActLoop</text>
+    <text x="470" y="336" text-anchor="middle" font-size="10" fill="#64748b">自实现 Agent 核心循环</text>
+    <text x="470" y="350" text-anchor="middle" font-size="10" fill="#64748b">能力二 · Agent 大脑</text>
+
+    <!-- PromptBuilder -->
+    <rect x="100" y="305" width="180" height="50" rx="6" fill="#ffffff" stroke="#f97316" stroke-width="1.5"/>
+    <text x="190" y="325" text-anchor="middle" font-size="12" font-weight="600" fill="#9a3412">PromptBuilder</text>
+    <text x="190" y="342" text-anchor="middle" font-size="10" fill="#64748b">组装 system + history</text>
+
+    <!-- ToolExecutor -->
+    <rect x="660" y="305" width="180" height="50" rx="6" fill="#ffffff" stroke="#f97316" stroke-width="1.5"/>
+    <text x="750" y="325" text-anchor="middle" font-size="12" font-weight="600" fill="#9a3412">ToolExecutor</text>
+    <text x="750" y="342" text-anchor="middle" font-size="10" fill="#64748b">执行 Tool + Sandbox</text>
+
+    <!-- ContextLoader -->
+    <rect x="880" y="305" width="140" height="50" rx="6" fill="#ffffff" stroke="#f97316" stroke-width="1.5"/>
+    <text x="950" y="325" text-anchor="middle" font-size="12" font-weight="600" fill="#9a3412">ContextLoader</text>
+    <text x="950" y="342" text-anchor="middle" font-size="10" fill="#64748b">Bootstrap + Skill</text>
+
+    <!-- Arrows -->
+    <line x1="280" y1="330" x2="380" y2="325" stroke="#94a3b8" stroke-width="1.5" marker-end="url(#arrow)"/>
+    <line x1="560" y1="325" x2="660" y2="330" stroke="#94a3b8" stroke-width="1.5" marker-end="url(#arrow)"/>
+  </g>
+
+  <!-- Arrows down (3 capability columns) -->
+  <line x1="240" y1="375" x2="240" y2="410" stroke="#475569" stroke-width="2" marker-end="url(#arrow)"/>
+  <line x1="470" y1="355" x2="470" y2="410" stroke="#475569" stroke-width="2" marker-end="url(#arrow)"/>
+  <line x1="750" y1="375" x2="750" y2="410" stroke="#475569" stroke-width="2" marker-end="url(#arrow)"/>
+
+  <!-- ========== Layer 3: Capabilities ========== -->
+  <g id="capability-layer">
+    <rect x="60" y="415" width="980" height="160" rx="10" fill="#f0fdf4" stroke="#10b981" stroke-width="2" filter="url(#shadow)"/>
+    <rect x="60" y="415" width="980" height="32" rx="10" fill="#10b981"/>
+    <rect x="60" y="435" width="980" height="12" fill="#10b981"/>
+    <text x="80" y="436" font-size="14" font-weight="700" fill="#ffffff">能力层 Capability Layer · 五大核心能力</text>
+    <text x="1020" y="436" text-anchor="end" font-size="11" fill="#d1fae5">Spring AI Alibaba 只用一半</text>
+
+    <!-- Capability 1: Provider -->
+    <rect x="100" y="465" width="240" height="95" rx="8" fill="#ffffff" stroke="#059669" stroke-width="1.5"/>
+    <text x="220" y="487" text-anchor="middle" font-size="14" font-weight="700" fill="#064e3b">能力一 · Provider</text>
+    <text x="220" y="507" text-anchor="middle" font-size="11" fill="#475569">ProviderService</text>
+    <text x="220" y="525" text-anchor="middle" font-size="10" fill="#64748b">对接 DeepSeek / Kimi / Qwen</text>
+    <text x="220" y="540" text-anchor="middle" font-size="10" fill="#64748b">显式 name → ChatModel 映射</text>
+
+    <!-- Capability 3: Memory -->
+    <rect x="350" y="465" width="240" height="95" rx="8" fill="#ffffff" stroke="#059669" stroke-width="1.5"/>
+    <text x="470" y="487" text-anchor="middle" font-size="14" font-weight="700" fill="#064e3b">能力三 · Memory</text>
+    <text x="470" y="507" text-anchor="middle" font-size="11" fill="#475569">MemoryService 三层门面</text>
+    <text x="470" y="525" text-anchor="middle" font-size="10" fill="#64748b">会话 + 长期 (MEMORY.md)</text>
+    <text x="470" y="540" text-anchor="middle" font-size="10" fill="#64748b">save_memory / recall_memory</text>
+
+    <!-- Capability 4: Tool -->
+    <rect x="600" y="465" width="240" height="95" rx="8" fill="#ffffff" stroke="#059669" stroke-width="1.5"/>
+    <text x="720" y="487" text-anchor="middle" font-size="14" font-weight="700" fill="#064e3b">能力四 · Tool</text>
+    <text x="720" y="507" text-anchor="middle" font-size="11" fill="#475569">ToolRegistry + Sandbox</text>
+    <text x="720" y="525" text-anchor="middle" font-size="10" fill="#64748b">内置 5 个 + Plugin 三档</text>
+    <text x="720" y="540" text-anchor="middle" font-size="10" fill="#64748b">SKILL.md / MCP / @Tool</text>
+
+    <!-- Capability 5: Web (separate, ties back) -->
+    <rect x="850" y="465" width="170" height="95" rx="8" fill="#ffffff" stroke="#059669" stroke-width="1.5"/>
+    <text x="935" y="487" text-anchor="middle" font-size="14" font-weight="700" fill="#064e3b">能力五 · Web</text>
+    <text x="935" y="507" text-anchor="middle" font-size="11" fill="#475569">Web Service</text>
+    <text x="935" y="525" text-anchor="middle" font-size="10" fill="#64748b">REST API 10 端点</text>
+    <text x="935" y="540" text-anchor="middle" font-size="10" fill="#64748b">Spring MVC + VT</text>
+  </g>
+
+  <!-- Arrow down -->
+  <line x1="550" y1="575" x2="550" y2="610" stroke="#475569" stroke-width="2" marker-end="url(#arrow)"/>
+
+  <!-- ========== Layer 4: Foundation ========== -->
+  <g id="foundation-layer">
+    <rect x="60" y="615" width="980" height="170" rx="10" fill="#faf5ff" stroke="#a855f7" stroke-width="2" filter="url(#shadow)"/>
+    <rect x="60" y="615" width="980" height="32" rx="10" fill="#a855f7"/>
+    <rect x="60" y="635" width="980" height="12" fill="#a855f7"/>
+    <text x="80" y="636" font-size="14" font-weight="700" fill="#ffffff">基础层 Foundation Layer · 工程地基</text>
+    <text x="1020" y="636" text-anchor="end" font-size="11" fill="#f3e8ff">数据存储 + 配置 + 上下文</text>
+
+    <!-- Profile -->
+    <rect x="100" y="665" width="170" height="50" rx="6" fill="#ffffff" stroke="#a855f7" stroke-width="1.5"/>
+    <text x="185" y="685" text-anchor="middle" font-size="12" font-weight="600" fill="#581c87">Profile YAML</text>
+    <text x="185" y="702" text-anchor="middle" font-size="10" fill="#64748b">Agent 配置 (.oryxos/profiles/)</text>
+
+    <!-- Bootstrap -->
+    <rect x="290" y="665" width="170" height="50" rx="6" fill="#ffffff" stroke="#a855f7" stroke-width="1.5"/>
+    <text x="375" y="685" text-anchor="middle" font-size="12" font-weight="600" fill="#581c87">Bootstrap Files</text>
+    <text x="375" y="702" text-anchor="middle" font-size="10" fill="#64748b">AGENTS / SOUL / USER.md</text>
+
+    <!-- MEMORY.md -->
+    <rect x="480" y="665" width="170" height="50" rx="6" fill="#ffffff" stroke="#a855f7" stroke-width="1.5"/>
+    <text x="565" y="685" text-anchor="middle" font-size="12" font-weight="600" fill="#581c87">MEMORY.md</text>
+    <text x="565" y="702" text-anchor="middle" font-size="10" fill="#64748b">长期记忆文件</text>
+
+    <!-- SQLite -->
+    <rect x="670" y="665" width="170" height="50" rx="6" fill="#ffffff" stroke="#a855f7" stroke-width="1.5"/>
+    <text x="755" y="685" text-anchor="middle" font-size="12" font-weight="600" fill="#581c87">SQLite (oryxos.db)</text>
+    <text x="755" y="702" text-anchor="middle" font-size="10" fill="#64748b">sessions + audit 表</text>
+
+    <!-- MCP Config -->
+    <rect x="860" y="665" width="160" height="50" rx="6" fill="#ffffff" stroke="#a855f7" stroke-width="1.5"/>
+    <text x="940" y="685" text-anchor="middle" font-size="12" font-weight="600" fill="#581c87">mcp_servers.yaml</text>
+    <text x="940" y="702" text-anchor="middle" font-size="10" fill="#64748b">外部 MCP 配置</text>
+
+    <!-- Tech stack -->
+    <rect x="100" y="730" width="900" height="40" rx="6" fill="#f3e8ff" stroke="#a855f7" stroke-width="1"/>
+    <text x="550" y="755" text-anchor="middle" font-size="12" fill="#581c87" font-weight="600">JDK 21 + Spring Boot 3.x + Spring AI Alibaba + SQLite + Spring Data JPA + Picocli + Logback</text>
+  </g>
+
+  <!-- Side notes -->
+  <g id="side-note" font-size="10" fill="#64748b">
+    <text x="80" y="810" font-style="italic">* 虚线框表示扩展阶段能力</text>
+    <text x="1020" y="810" text-anchor="end" font-style="italic">OryxOS v1.0 · docs/TechnicalSolution.md</text>
+  </g>
+</svg>
