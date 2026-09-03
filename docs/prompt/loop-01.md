@@ -1,202 +1,200 @@
-# OryxOS Loop Prompt · 01
+# OryxOS Loop 提示词 · 01
 
-> Source: `docs/prompt/01.md` (39 conversational turns).
-> Purpose: same work, expressed as a single self-contained prompt for an autonomous loop agent (ReAct / Claude Code / Cursor agent mode). Strip conversational filler, resolve UI selections and corrections, order by dependency, attach verifiable acceptance per phase.
+> 来源：`docs/prompt/01.md`（39 句对话）。
+> 目的：把同一份工作表达成 autonomous loop agent（ReAct / Claude Code / Cursor agent 模式）能直接拿来执行的单文件提示词 —剥掉对话噪音、合并 UI 选项回答与纠正、按依赖排序、每阶段带可验证判据。
 
 ---
 
-## Objective
+## 目标
 
-Bootstrap the OryxOS project end-to-end from its 4 design documents. Deliver a Maven multi-module Spring Boot app (runtime) plus a VitePress + GitHub Pages website (docs + homepage). Both must build, run, and ship greenfield.
+从 4 份设计文档出发，把 OryxOS 项目从 greenfield 端到端搭起来。最终交付：Maven 多模块 Spring Boot 应用（runtime）+ VitePress + GitHub Pages 网站（文档 + 主页）。两者都要能 build、能 run、能 ship。
 
-## Context (read first)
+## 上下文（先读）
 
-| Item | Value |
+| 项 | 值 |
 |---|---|
-| Working root | `E:\VibeCoding\OryxOS` |
-| Design docs (source of truth) | `docs/IndustryResearch.md`, `docs/DemandAnalysis.md`, `docs/TechnicalSolution.md`, `docs/AiProgrammingGuide.md` |
-| Stack | JDK 21 + Spring Boot 3.x + Spring AI Alibaba (Provider only) + SQLite + JPA + Picocli |
-| Maven modules (9, fixed) | `oryxos-boot`, `oryxos-core`, `oryxos-provider`, `oryxos-memory`, `oryxos-tool`, `oryxos-web`, `oryxos-channel-cli`, `oryxos-storage`, `oryxos-cli` |
-| Constitution | `CLAUDE.md` — 7 non-negotiable principles (most critical: self-implement ReAct loop; Spring AI for protocol/schema only — never auto-tool execution; audit tables `tool_invocations` + `llm_calls` day-one; ProviderService uses explicit name→ChatModel map, never type scan; Tool is one module, not three; SKILL.md is prompt input not Tool) |
+| 工作根目录 | `E:\VibeCoding\OryxOS` |
+| 设计文档（单一事实来源） | `docs/IndustryResearch.md`、`docs/DemandAnalysis.md`、`docs/TechnicalSolution.md`、`docs/AiProgrammingGuide.md` |
+| 技术栈 | JDK 21 + Spring Boot 3.x + Spring AI Alibaba（只用于 Provider）+ SQLite + JPA + Picocli |
+| Maven 模块（9 个，固定） | `oryxos-boot`、`oryxos-core`、`oryxos-provider`、`oryxos-memory`、`oryxos-tool`、`oryxos-web`、`oryxos-channel-cli`、`oryxos-storage`、`oryxos-cli` |
+| Constitution | `CLAUDE.md` — 7 条不可协商原则（最关键：自实现 ReAct loop；Spring AI 只用于协议/schema — 禁用自动 tool 执行；审计表 `tool_invocations` + `llm_calls` day-one 落库；`ProviderService` 用显式 name→ChatModel 映射，不用类型扫描；Tool 是一个模块不是三个；SKILL.md 是 prompt 输入不是 Tool） |
 | Git remote | `https://github.com/liujp2015/OryxOS.git` |
-| Git proxy | `http://127.0.0.1:7890` (`git config http.proxy` once) |
-| Reference site (homepage visual baseline) | `E:\github\mq9\website` — copy visual design 1:1 (achromatic, 8 sections, single pulse animation) |
-| Build tooling | Maven `mvn` (or `mvnw` once generated); Node 22+ for website |
+| Git proxy | `http://127.0.0.1:7890`（一次性 `git config http.proxy`） |
+| 参考站点（主页视觉基线） | `E:\github\mq9\website` — 1:1 复制视觉（纯 achromatic、8 个 section、单点 pulse 动画） |
+| 工具链 | Maven `mvn`（或生成后的 `mvnw`）；Node 22+ 用于 website |
 
 ---
 
-## Phases (execute in order; do not skip ahead)
+## 阶段（按顺序执行，不要跳）
 
-### Phase 1 — Project meta files
+### Phase 1 — 项目元文件
 
-**Files**: `CLAUDE.md`, `README.md` (both at repo root).
+**文件**：`CLAUDE.md`、`README.md`（都在仓库根）。
 
-- Read all 4 design docs in `docs/`.
-- Write `CLAUDE.md` with the 7 constitution principles (see `docs/AiProgrammingGuide.md` §3.2). Deviation notice for the website (single-binary is suspended for `website/` only, per owner authorization).
-- Write `README.md` modeled on standard open-source layout, with logo at the top (`docs/images/logo.svg`).
-- Re-read `CLAUDE.md` before proceeding. **Constraint**: do not move the 4 design docs from `docs/`.
+- 读完 `docs/` 下 4 份设计文档。
+- 写 `CLAUDE.md`，包含 7 条 constitution 原则（见 `docs/AiProgrammingGuide.md` §3.2）。为 website 单列一条偏离声明（single-binary 仅在 `website/` 上暂停，owner 显式授权）。
+- 写 `README.md`，参考标准开源项目布局，顶部放 logo（`docs/images/logo.svg`）。
+- 进入下一步前**重读 CLAUDE.md**。**约束**：不要把 4 份设计文档从 `docs/` 移到别处。
 
-**Done when**: both files exist at repo root, 4 design docs still under `docs/`.
+**完成判据**：两个文件都在仓库根；4 份设计文档仍在 `docs/`。
 
-### Phase 2 — Diagrams + Maven skeleton
+### Phase 2 — 架构图 + Maven 骨架
 
-**Files**: `docs/images/architecture.svg`, `docs/images/react-loop.svg`, `pom.xml`, `mvnw` + `mvnw.cmd` + `.mvn/`, 9 empty module dirs.
+**文件**：`docs/images/architecture.svg`、`docs/images/react-loop.svg`、`pom.xml`、`mvnw` + `mvnw.cmd` + `.mvn/`、9 个空模块目录。
 
-- Generate `architecture.svg` and `react-loop.svg` from the tech solution + AI guide. Reference them from the docs that describe them.
-- Generate `pom.xml` parent POM packaging `pom`, with the 9 modules declared (do `or `to `oryxos-*`).
-- Create the 9 module dirs, each containing at least a `pom.xml` that extends parent and declares its expected deps). `e.g. oryxos-core` depends on nothing, `oryxos-boot` depends on all.
-- Run `mvn -q -DskipTests validate` to confirm POM graph is sound. **Hard gate**: must compile to `target/` per module; do not move past this phase with build errors.
+- 从技术方案 + AI 编程指南生成 `architecture.svg` 和 `react-loop.svg`，在描述它们的文档里引用。
+- 生成 `pom.xml` 父 POM，`packaging` 写 `pom`，声明 9 个模块（`module` 列表里全列 `oryxos-*`）。
+- 创建 9 个模块目录，每个至少包含一个 `pom.xml`，继承父 POM 并声明预期依赖。例如 `oryxos-core` 不依赖任何其他模块，`oryxos-boot` 依赖全部。
+- 跑 `mvn -q -DskipTests validate` 验证 POM 图正确。**硬关卡**：每个模块必须能编译出 `target/`，本阶段不通过不能往下走。
 
-**Done when**: `mvn validate` succeeds; 9 `target/` dirs produced; `architecture.svg` + `react-loop.svg` committed.
+**完成判据**：`mvn validate` 成功；产出 9 个 `target/` 目录；`architecture.svg` + `react-loop.svg` 已提交。
 
-### Phase 3 — Runtime entry points
+### Phase 3 — Runtime 入口
 
-**Files**: `oryxos-boot/src/main/java/.../OryxOsApplication.java`, `oryxos-boot/src/main/resources/application.yaml`, `oryxos-cli/src/main/java/.../OryxOsCli.java`, `oryxos-channel-cli/src/main/java/.../CliChannel.java`.
+**文件**：`oryxos-boot/src/main/java/.../OryxOsApplication.java`、`oryxos-boot/src/main/resources/application.yaml`、`oryxos-cli/src/main/java/.../OryxOsCli.java`、`oryxos-channel-cli/src/main/java/.../CliChannel.java`。
 
-- `OryxOsApplication` is a `@SpringBootApplication`. Boot must be runnable via `java -jar` after `mvn package`.
-- Add `application.yaml` with `spring.application.name=oryxos`, server port `8080`, and the SQLite datasource pointing at `${user.home}/.oryxos/oryxos.db`.
-- `OryxOsCli` is the Picocli entry. `java -jar oryxos-boot.jar --version` must print the version string. Then `java -jar oryxos-boot.jar` (no args) starts the Spring context.
-- `CliChannel` lives in `oryxos-channel-cli` and exposes the same `--version` flag (delegated to boot).
+- `OryxOsApplication` 加 `@SpringBootApplication`。`mvn package` 后必须能 `java -jar` 启动 boot。
+- 加 `application.yaml`：`spring.application.name=oryxos`、server port `8080`、SQLite 数据源指向 `${user.home}/.oryxos/oryxos.db`。
+- `OryxOsCli` 是 Picocli 入口。`java -jar oryxos-boot.jar --version` 必须打印版本字符串。`java -jar oryxos-boot.jar`（不带参数）启动 Spring 上下文。
+- `CliChannel` 在 `oryxos-channel-cli`，同样暴露 `--version`（委托给 boot）。
 
-**Done when**:
-- `java -jar target/oryxos-boot-*.jar --version` prints `OryxOS <version>` and exits 0.
-- `java -jar target/oryxos-boot-*.jar` starts Spring on :8080, `GET /api/v1/health` returns 200.
+**完成判据**：
+- `java -jar target/oryxos-boot-*.jar --version` 输出 `OryxOS <version>`，exit code 0。
+- `java -jar target/oryxos-boot-*.jar` 启动 Spring 监听 :8080，`GET /api/v1/health` 返回 200。
 
-### Phase 4 — Five core capabilities
+### Phase 4 — 五大核心能力
 
-Order = dependency order from `AiProgrammingGuide.md` §1.3. Not priority order.
+顺序 = `AiProgrammingGuide.md` §1.3 的依赖序，不是优先级。
 
-| US | Capability | Modules touched | Verification demo |
+| US | 能力 | 涉及模块 | 验证 demo |
 |---|---|---|---|
-| US-1 | LLM Provider | `oryxos-provider`, `oryxos-core` | Provider unit-tested with 2 real providers |
-| US-2 | ReAct loop | `oryxos-core`, `oryxos-tool` (HTTP tool), `oryxos-channel-cli`, `oryxos-cli` | "查天气穿衣" via `oryxos chat` |
-| US-3 | Memory | `oryxos-memory`, `oryxos-core` | "跨对话记偏好" — second session references saved preference |
-| US-4 | Plugin Tool | `oryxos-tool` (file/shell/http), `oryxos-core` (SKILL.md via ContextLoader) | "零代码 PR digest" |
-| US-5 | Web Service | `oryxos-web`, `oryxos-storage`, `oryxos-cli` | 10 REST endpoints respond; sessions persist to SQLite |
+| US-1 | LLM Provider | `oryxos-provider`、`oryxos-core` | 2 个真实 Provider 跑通单元测试 |
+| US-2 | ReAct 循环 | `oryxos-core`、`oryxos-tool`（HTTP tool）、`oryxos-channel-cli`、`oryxos-cli` | "查天气穿衣"通过 `oryxos chat` |
+| US-3 | Memory | `oryxos-memory`、`oryxos-core` | "跨对话记偏好"— 第二次会话引用首次保存的偏好 |
+| US-4 | Plugin Tool | `oryxos-tool`（file/shell/http）、`oryxos-core`（SKILL.md 通过 ContextLoader） | "零代码 PR digest" |
+| US-5 | Web Service | `oryxos-web`、`oryxos-storage`、`oryxos-cli` | 10 个 REST 端点响应；Session 持久化到 SQLite |
 
-After each US, run `/speckit.analyze` (or equivalent manual cross-check of `spec.md` vs implementation).
+每个 US 完成后跑 `/speckit.analyze`（或手动 cross-check `spec.md` vs 实现）。
 
-**Constitution reminders during US-2**:
-- ReAct loop self-implemented; `ToolExecutor` controls dispatch.
-- Spring AI's auto-tool-execution is **disabled**. Confirm no `chatClient.call(prompt)` returns tool calls that get executed automatically.
-- `ProviderService` uses explicit `Map<String, ChatModel>`, never bean-type scan.
+**US-2 期间的 constitution 提醒**：
+- ReAct 循环自实现；`ToolExecutor` 控制调度。
+- **禁用** Spring AI 的自动 tool 执行。确认没有 `chatClient.call(prompt)` 拿到 tool calls 后被自动执行的路径。
+- `ProviderService` 用显式 `Map<String, ChatModel>`，**不**按 Bean 类型扫描。
 
-**Constitution reminders during US-3 and US-5**:
-- `tool_invocations` and `llm_calls` are written to SQLite the same day they execute (not just logged).
-- Long-term memory is `MEMORY.md` file + `save_memory` / `recall_memory` tools. No vector DB in core phase.
+**US-3 和 US-5 期间的 constitution 提醒**：
+- `tool_invocations` 和 `llm_calls` **执行当天就写** SQLite（不是只打日志）。
+- 长期记忆是 `MEMORY.md` 文件 + `save_memory` / `recall_memory` 两个内置 Tool。核心阶段不引入向量库。
 
 ### Phase 5 — Logo
 
-**Files**: `docs/images/logo.svg`, `docs/images/logo-dark.svg`, `docs/images/logo-mark.svg`.
+**文件**：`docs/images/logo.svg`、`docs/images/logo-dark.svg`、`docs/images/logo-mark.svg`。
 
-- Draw an oryx antelope mark (two horns + head + orbit) in SVG.
-- Both color and dark variants. README embeds the color one with `<picture>` switching to dark on `prefers-color-scheme: dark`.
+- 画一个羚羊 mark（两只角 + 头 + 轨道环），SVG 格式。
+- 彩色版 + 深色版。README 用 `<picture>`，彩色默认、深色在 `prefers-color-scheme: dark` 下切换。
 
-**Done when**: README renders with logo at the top on both color schemes.
+**完成判据**：README 顶部在两种色彩模式下都能渲染 logo。
 
-### Phase 6 — Homepage (visual baseline = `E:\github\mq9\website`)
+### Phase 6 — 主页（视觉基线 = `E:\github\mq9\website`）
 
-**Files**: `website/package.json`, `website/.vitepress/{config.mts,theme/index.ts,theme/custom.css,theme/components/Home.vue}`, `website/index.md`, `website/public/logo*.svg`, `website/public/favicon.svg`, `website/public/architecture.svg`, `.github/workflows/deploy-website.yml`.
+**文件**：`website/package.json`、`website/.vitepress/{config.mts,theme/index.ts,theme/custom.css,theme/components/Home.vue}`、`website/index.md`、`website/public/logo*.svg`、`website/public/favicon.svg`、`website/public/architecture.svg`、`.github/workflows/deploy-website.yml`。
 
-- Copy `E:\github\mq9\website` visually 1:1: pure achromatic, 8 sections, single animation (Hero badge dot pulse), responsive at 900px and 768px.
-- Replace copy with OryxOS content: Hero / Flow Diagram / Problem / Core Capabilities / Scenarios (8 cards) / SDK Integration (3 cards) / Protocol / CTA.
-- Override VitePress defaults in `custom.css`: hide `VPHero`, `VPFeature`, `VPNavBarAppearance`, `VPSwitchAppearance`. Force `appearance: 'force-light'`.
-- Embed Google Fonts (Space Grotesk / Inter / JetBrains Mono).
-- After Phase 6, before Phase 7: confirm `npm run docs:dev` shows the page on http://127.0.0.1:5173/.
+- 1:1 复制 `E:\github\mq9\website` 视觉：纯 achromatic、8 个 section、单点 pulse 动画、900px 和 768px 响应式。
+- 文案替换为 OryxOS：Hero / Flow Diagram / Problem / Core Capabilities / Scenarios（8 张）/ SDK Integration（3 张）/ Protocol / CTA。
+- 在 `custom.css` 里覆盖 VitePress 默认：隐藏 `VPHero`、`VPFeature`、`VPNavBarAppearance`、`VPSwitchAppearance`。强制 `appearance: 'force-light'`。
+- 加载 Google Fonts（Space Grotesk / Inter / JetBrains Mono）。
+- 进入 Phase 7 前确认：`npm run docs:dev` 在 http://127.0.0.1:5173/ 正常显示。
 
-**Done when**: dev server renders all 8 sections without layout breakage.
+**完成判据**：dev server 渲染全部 8 个 section，无布局破损。
 
-### Phase 7 — Website docs + i18n
+### Phase 7 — Website 文档 + i18n
 
-**Files**: `website/docs/{index,overview,demand,tech,ai-guide}.md`, `website/zh/index.md`, `website/zh/docs/{index,overview,demand,tech,ai-guide}.md`, `website/.vitepress/config.mts`.
+**文件**：`website/docs/{index,overview,demand,tech,ai-guide}.md`、`website/zh/index.md`、`website/zh/docs/{index,overview,demand,tech,ai-guide}.md`、`website/.vitepress/config.mts`。
 
-- Derive each EN page from the corresponding design doc:
-  - `overview.md` ← `IndustryResearch.md` (positioning + four 4-anchor words).
-  - `demand.md` ← `DemandAnalysis.md` (5 core capabilities, milestones).
-  - `tech.md` ← `TechnicalSolution.md` (7 decisions, 9 modules).
-  - `ai-guide.md` ← `AiProgrammingGuide.md` (5 user stories, Spec-Kit workflow).
-- Mirror in `zh/docs/`. Keep technical terms in English: `Agent OS`, `ReAct`, `Spring Boot`, `JDK 21`, `MCP`, `MEMORY.md`, `SKILL.md`, `LLM`, `Provider`, `Profile`, `Tool`, `Channel`, `Session`, `Sandbox`, all `oryxos-*` module names, all command names, all class names.
-- Configure `locales` in `config.mts`: `root` (English) + `zh` (Simplified Chinese). Per-locale nav + sidebar. Locale switcher auto-renders in nav.
-- Set `base: '/OryxOS/'` in `config.mts` (project site lives at the subpath; missing this causes 404 on every asset).
+- 每篇 EN 文档对应一份设计文档：
+  - `overview.md` ← `IndustryResearch.md`（定位 + 四词锚点）。
+  - `demand.md` ← `DemandAnalysis.md`（5 大能力、里程碑）。
+  - `tech.md` ← `TechnicalSolution.md`（7 个决策、9 个模块）。
+  - `ai-guide.md` ← `AiProgrammingGuide.md`（5 个 user story、Spec-Kit 流程）。
+- `zh/docs/` 镜像翻译。技术词保留英文：`Agent OS`、`ReAct`、`Spring Boot`、`JDK 21`、`MCP`、`MEMORY.md`、`SKILL.md`、`LLM`、`Provider`、`Profile`、`Tool`、`Channel`、`Session`、`Sandbox`，所有 `oryxos-*` 模块名、所有命令名、所有类名。
+- `config.mts` 配置 `locales`：`root`（English）+ `zh`（简体中文）。每 locale 独立 nav + sidebar。locale switcher 在 nav 自动出现。
+- `config.mts` 设 `base: '/OryxOS/'`（project site 在子路径；漏掉会导致所有 asset 404）。
 
-**Done when**: `npm run docs:build` succeeds; `/`, `/docs/`, `/zh/`, `/zh/docs/`, `/zh/docs/tech` all serve 200 locally and asset URLs contain `/OryxOS/`.
+**完成判据**：`npm run docs:build` 成功；`/`、`/docs/`、`/zh/`、`/zh/docs/`、`/zh/docs/tech` 本地都返回 200；HTML 里 asset URL 全部含 `/OryxOS/`。
 
-### Phase 8 — Logo on website
+### Phase 8 — Logo 接到 website
 
-**Files**: `website/.vitepress/{config.mts,theme/components/Home.vue}`.
+**文件**：`website/.vitepress/{config.mts,theme/components/Home.vue}`。
 
-- Reference `docs/images/logo-mark.svg` as the canonical source (already mirrored to `website/public/logo-mark.svg`).
-- Display it in the Home.vue hero above the badge (80px square, centered).
-- Add `themeConfig.logo: { src: '/logo-mark.svg', alt: 'OryxOS' }` for both root and zh locales — VitePress will use it in the nav instead of the text title.
+- `docs/images/logo-mark.svg` 作为单一源（已镜像到 `website/public/logo-mark.svg`）。
+- 在 Home.vue hero 顶部显示（80px 方形，居中）。
+- root 和 zh 两个 locale 都加 `themeConfig.logo: { src: '/logo-mark.svg', alt: 'OryxOS' }` — VitePress nav 会用图替换文字标题。
 
-**Done when**: homepage hero shows the mark; nav top-left shows the mark image.
+**完成判据**：hero 顶部能看到 mark；nav 左上角是 mark 图。
 
-### Phase 9 — Overflow containment
+### Phase 9 — 溢出治理
 
-**Files**: `website/.vitepress/theme/components/Home.vue` (`.oryx-primitives`, `.oryx-primitive`, `.oryx-code`), `website/.vitepress/theme/custom.css` (html/body).
+**文件**：`website/.vitepress/theme/components/Home.vue`（`.oryx-primitives`、`.oryx-primitive`、`.oryx-code`）、`website/.vitepress/theme/custom.css`（html/body）。
 
-Problem: long code lines in `<pre>` blocks inside the 3-column Core Capabilities grid push cards beyond their column, causing the whole page to horizontal-scroll.
+问题：3 列 Core Capabilities grid 里 `<pre>` 代码块行长超过列宽，把卡片撑出列外，整页出现横向滚动条。
 
-Fix:
-1. `.oryx-primitives` grid-template-columns → `repeat(3, minmax(0, 1fr))`.
-2. `.oryx-primitive` add `min-width: 0`.
-3. `html, body` add `overflow-x: hidden` (safety net — does not affect vertical scroll).
-4. `.oryx-code` already has `overflow-x: auto` — confirm so internal scrollbar appears inside the code block instead of escaping.
+修复：
+1. `.oryx-primitives` 把 `grid-template-columns` 改成 `repeat(3, minmax(0, 1fr))`。
+2. `.oryx-primitive` 加 `min-width: 0`。
+3. `html, body` 加 `overflow-x: hidden`（兜底，不影响垂直滚动）。
+4. `.oryx-code` 保留 `overflow-x: auto` — 代码块自己内部出滚动条。
 
-**Done when**: at viewport widths 1440 / 1280 / 1100 / 900 / 768, page never horizontal-scrolls; only the code block does when its content is wider than the card.
+**完成判据**：viewport 1440 / 1280 / 1100 / 900 / 768 下整页都不出横向滚动条；只有 code block 内部在内容过宽时出滚动条。
 
-### Phase 10 — GitHub Pages deploy
+### Phase 10 — GitHub Pages 部署
 
-**Files**: `.github/workflows/deploy-website.yml`.
+**文件**：`.github/workflows/deploy-website.yml`。
 
-- Workflow triggers on push to `main` if paths include `website/**`, `docs/images/**`, or the workflow file itself.
-- Node 24, `npm ci`, `vitepress build`, `actions/configure-pages@v4`, `actions/upload-pages-artifact@v3`, `actions/deploy-pages@v4`.
+- Workflow 在 push 到 `main` 时触发，路径过滤：`website/**`、`docs/images/**`、workflow 文件本身。
+- Node 24、`npm ci`、`vitepress build`、`actions/configure-pages@v4`、`actions/upload-pages-artifact@v3`、`actions/deploy-pages@v4`。
 
-Owner action required (cannot be done by the loop): in the repo Settings → Pages, choose Source = **GitHub Actions**. Until that toggle is set, Pages will not serve.
+需要 owner 手动做的（loop 做不了）：仓库 Settings → Pages → Source 选 **GitHub Actions**。没勾上之前 Pages 不会上线。
 
-**Done when**: after a push, https://liujp2015.github.io/OryxOS/ serves 200 and every referenced CSS/JS/font returns 200.
+**完成判据**：push 后 https://liujp2015.github.io/OryxOS/ 返回 200；HTML 引用的每个 CSS/JS/font 也返回 200。
 
-### Phase 11 — Repo hygiene
+### Phase 11 — 仓库清理
 
-- Commit `README.md`, `docs/images/` (logo + diagrams), `docs/prompt/01.md` (conversation archive) — all untracked from earlier sessions.
-- Commit `docs/prompt/loop-01.md` (this file).
-- Continue the convention: each new session appends to `01.md` (flat, numbered, no categories) or starts `02.md`.
+- 提交 `README.md`、`docs/images/`（logo + 架构图）、`docs/prompt/01.md`（对话归档）— 之前 session 遗留的 untracked。
+- 提交 `docs/prompt/loop-01.md`（本文件）。
+- 沿用约定：每个新会话追加到 `01.md`（扁平编号，不分类）或开 `02.md`。
 
-**Done when**: `git status` shows no untracked files in `docs/` or root.
+**完成判据**：`git status` 在 `docs/` 和仓库根没有 untracked 文件。
 
 ---
 
-## Acceptance (whole-prompt gate)
+## 验收（整份提示词的硬关卡）
 
-A run is complete only if all hold:
+全部满足才算完成：
 
-1. `mvn -q clean package` succeeds across all 9 modules.
-2. `java -jar oryxos-boot/target/oryxos-boot-*.jar --version` prints `OryxOS <version>` and exits 0.
-3. `java -jar oryxos-boot/target/oryxos-boot-*.jar` starts Spring on :8080; `GET /api/v1/health` returns 200.
-4. All 5 user-story demos pass (US-2 through US-5; US-1 is verified via Provider unit tests).
-6. `cd website && npm run docs:build` succeeds with no errors.
-7. `curl -I https://liujp2515.github.io/OryxOS/` returns 200 (replace with the actual remote after first push).
+1. `mvn -q clean package` 跨 9 个模块成功。
+2. `java -jar oryxos-boot/target/oryxos-boot-*.jar --version` 输出 `OryxOS <version>`，exit code 0。
+3. `java -jar oryxos-boot/target/oryxos-boot-*.jar` 启动 Spring :8080；`GET /api/v1/health` 返回 200。
+4. 5 个 user story demo 全过（US-2 到 US-5；US-1 通过 Provider 单元测试验证）。
+5. `cd website && npm run docs:build` 成功无错误。
+6. `curl -I https://liujp2015.github.io/OryxOS/` 返回 200；页面引用的每个 asset URL 也都返回 200。
 
-Wait — replacement for #7: `curl -I https://liujp2015.github.io/OryxOS/` returns 200; every asset URL referenced from the page also returns 200.
+## 失败恢复
 
-## Failure recovery
-
-| Symptom | Action |
+| 症状 | 动作 |
 |---|---|
-| `mvn` fails with module-dep error | re-read `CLAUDE.md` §1 (modules table); fix the dependency direction (always `core` ← capability ← `boot`); never add circular deps. |
-| AI agent enabled Spring AI auto-tool-execution | re-read constitution principle 4; remove any `ChatClient.call(...).getResult().getOutput().getToolCalls()` followed by an auto-execute path. `ToolExecutor` is the only executor. |
-| `ProviderService` bean type-scans `ChatModel` | replace with explicit `Map<String, ChatModel>` keyed by provider name. |
-| Tool split across multiple modules | consolidate into `oryxos-tool` only. |
-| Audit tables missing in SQLite | confirm `tool_invocations` and `llm_calls` repositories are wired and called from `ToolExecutor` / `ProviderService`. |
-| Port 5173 in use | `taskkill //F //PID <pid>` then restart `npm run docs:dev`. |
-| Port 8080 in use | `taskkill //F //PID <pid>` before starting OryxOS. |
-| Git push fails (SSL handshake / connection reset) | confirm `git config http.proxy http://127.0.0.1:7890` is set; retry. |
-| GitHub Pages serves but assets 404 | `base: '/OryxOS/'` must be set in `config.mts`; rebuild and push. |
-| Hero section too wide → Core Capabilities overflow | confirm `minmax(0, 1fr)` on grid + `min-width: 0` on items + `overflow-x: hidden` on body. |
-| VitePress shows dark-mode toggle | `appearance: 'force-light'` in `config.mts`; hide `VPSwitchAppearance` / `VPNavBarAppearance` in `custom.css`. |
+| `mvn` 报模块依赖错 | 重读 `CLAUDE.md` §1（模块表）；修依赖方向（始终 `core` ← 能力模块 ← `boot`）；不允许循环依赖。 |
+| AI agent 启用了 Spring AI 自动 tool 执行 | 重读 constitution 第 4 条；删掉任何 `ChatClient.call(...).getOutput().getToolCalls()` 后接自动执行的路径。`ToolExecutor` 是唯一执行者。 |
+| `ProviderService` 按 Bean 类型扫描 `ChatModel` | 改成显式 `Map<String, ChatModel>`，key 是 provider name。 |
+| Tool 被拆到多个模块 | 合并回 `oryxos-tool` 一个模块。 |
+| SQLite 里没有审计表 | 确认 `tool_invocations` 和 `llm_calls` 的 repository 已注册，从 `ToolExecutor` / `ProviderService` 调用写入。 |
+| 端口 5173 被占 | `taskkill //F //PID <pid>` 后重启 `npm run docs:dev`。 |
+| 端口 8080 被占 | `taskkill //F //PID <pid>` 后启动 OryxOS。 |
+| Git push 失败（SSL handshake / connection reset） | 确认 `git config http.proxy http://127.0.0.1:7890` 已设；重试。 |
+| GitHub Pages 上了但 asset 404 | `config.mts` 必须设 `base: '/OryxOS/'`；rebuild 后 push。 |
+| Hero 太宽 → Core Capabilities 溢出 | 确认 grid 用 `minmax(0, 1fr)`、item 用 `min-width: 0`、body 用 `overflow-x: hidden`。 |
+| VitePress 出现暗模式按钮 | `config.mts` 设 `appearance: 'force-light'`；在 `custom.css` 隐藏 `VPSwitchAppearance` / `VPNavBarAppearance`。 |
 
-## Loop hygiene
+## Loop 卫生
 
-- Append a new numbered turn to `docs/prompt/01.md` (or start `02.md`) at the start of each session.
-- Update `loop-01.md` only if a new phase is added or acceptance criteria change.
-- Commit at the end of each phase, not at the end of the whole run.
+- 每次会话开头往 `docs/prompt/01.md`（或开 `02.md`）追加一条新编号 turn。
+- `loop-01.md` 只在新增 phase 或验收标准变化时更新。
+- 每个 phase 结束就 commit，不要等到整个 run 跑完再提交。
